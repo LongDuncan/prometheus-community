@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-deployment
+  namespace: monitoring
+  labels:
+    app: fastapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi
+  template:
+    metadata:
+      labels:
+        app: fastapi
+    spec:
+      volumes:
+        - name: whitelist-volume
+          configMap:
+            name:  fastapi-whitelist-configmap
+            items:
+            - key: teamid_whitelist.json
+              path: ./teamid_whitelist.json
+      containers:
+      - name: fastapi
+        image: long0709/test_fastapi:v1.0.0
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+          - mountPath : /app/app/config
+            name: whitelist-volume
+        env:
+        - name: APP_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: fastapi-env-configmap
+              key: app_client_id
+        - name: USER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: fastapi-env-configmap
+              key: user_name
+        - name: USER_PS
+          valueFrom:
+            configMapKeyRef:
+              name: fastapi-env-configmap
+              key: user_ps
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fastapi-env-configmap
+  namespace: monitoring
+data:
+  app_client_id: DDD
+  user_name: BBB
+  user_ps: CCC
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fastapi-whitelist-configmap
+  namespace: monitoring
+data:
+  teamid_whitelist.json : |
+    {
+      "t2": [
+        "t2c1"
+      ]
+    }

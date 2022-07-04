@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+    name: duncan-fastapi-servicemonitor
+    namespace: monitoring
+    labels:
+        k8s-app: duncan-fastapi
+        release: prometheus
+spec:
+    selector:
+        matchLabels:
+            k8s-app: duncan-fastapi
+    namespaceSelector:
+        matchNames:
+        - monitoring
+    endpoints:
+    - port: metrics
+      interval: 60s
+      scheme: http
+      honorLabels: true
+      path: /metrics

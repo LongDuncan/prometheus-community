@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: duncan-fastapi
+  namespace: monitoring
+  labels:
+      k8s-app: duncan-fastapi
+      release: prometheus
+subsets:
+  - addresses:
+    - ip: 192.168.2.34
+    ports:
+    - name: metrics
+      port: 8080
+      protocol: TCP
